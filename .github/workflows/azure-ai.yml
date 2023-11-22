@@ -2,32 +2,32 @@ name: Azure ML Job Pipeline
 
 on:
   workflow_dispatch:
-  inputs:
-    create_compute:
-      description: "Create compute"
-      required: false
-      default: true
-      type: boolean
-    train_model:
-      description: "Train model"
-      required: false
-      default: true
-      type: boolean
-    skip_training_pipeline:
-      description: "Skip training pipeline"
-      required: false
-      default: false
-      type: boolean
-    deploy_model:
-      description: "Deploy model"
-      required: false
-      default: true
-      type: boolean
-  branches:
-    - main
-  # push:
-  #   branches:
-  #     - main
+    inputs:
+      create_compute:
+        description: "Create compute"
+        required: false
+        default: true
+        type: boolean
+      train_model:
+        description: "Train model"
+        required: false
+        default: true
+        type: boolean
+      skip_training_pipeline:
+        description: "Skip training pipeline"
+        required: false
+        default: false
+        type: boolean
+      deploy_model:
+        description: "Deploy model"
+        required: false
+        default: true
+        type: boolean
+    branches:
+      - main
+    push:
+      branches:
+        - main
 
 env:
   GROUP: mlops
@@ -125,7 +125,7 @@ jobs:
     needs: azure-pipeline
     runs-on: ubuntu-latest
     steps:
-    -name: Check out repo
+    - name: Check out repo
       uses: actions/checkout@v4
   
   deploy:
