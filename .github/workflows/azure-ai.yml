@@ -139,3 +139,11 @@ jobs:
 
     runs-on: ubuntu-latest
     # runs-on: self-hosted
+    steps:
+      # Define steps for the deploy job
+      # For example:
+      - name: Deploy step 1
+        run: echo "Deploying..."
+
+      - name: Deploy step 2
+        run: echo "Complete deployment."
