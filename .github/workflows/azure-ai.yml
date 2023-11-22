@@ -1,0 +1,141 @@
+name: Azure ML Job Pipeline
+
+on:
+  workflow_dispatch:
+  inputs:
+    create_compute:
+      description: "Create compute"
+      required: false
+      default: true
+      type: boolean
+    train_model:
+      description: "Train model"
+      required: false
+      default: true
+      type: boolean
+    skip_training_pipeline:
+      description: "Skip training pipeline"
+      required: false
+      default: false
+      type: boolean
+    deploy_model:
+      description: "Deploy model"
+      required: false
+      default: true
+      type: boolean
+  branches:
+    - main
+  # push:
+  #   branches:
+  #     - main
+
+env:
+  GROUP: mlops
+  workspace: dagobert
+  LOCATION: westeurope
+  # allow to override for each urn
+  CREATE_COMPUTE: ${{ github.event.inputs.create_compute }}
+  TRAIN_MODEL: ${{ github.event.inputs.train_model }}
+  SKIP_TRAINING_PIPELINE: ${{ github.event.inputs.skip_training_pipeline }}
+  DEPLOY_MODEL: ${{ github.event.inputs.deploy_model }}
+
+jobs:
+  azure-pipeline:
+    if: ${{ env.SKIP_TRAINING_PIPELINE == 'false' }}
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Azure login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
+          # AZURE_CREDENTIALS should be a secret in your repo
+
+      - name: prepare Azure ML script
+        uses: azure/CLI@v1
+        id: prepare-azure-ml-pipeline
+        if: ${{ env.CREATE_COMPUTE == 'true' }}
+        with:
+          azcliversion: 2.53.0
+          inlineScript: |
+            az extension add --name ml -y
+            az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
+            az ml compute create --file ./self/environment/compute.yaml --resource-group mlops --workspace-name dagobert
+
+      - name: start compute
+        uses: azure/CLI@v1
+        if: ${{ steps.prepare-azure-ml-script.outcome == 'success'}} || ${{ steps.prepare-azure-ml-script.outcome == 'skipped'}}
+        with:
+          azcliversion: 2.53.0
+          inlineScript: |
+            az extension add --name ml -y
+            az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
+            az ml compute start --name basic-name --resource-group mlops --workspace-name dagobert
+        continue-on-error: true
+
+      - name: Execute Azure ML script
+        uses: azure/CLI@v1
+        id: execute-azure-ml-pipeline
+        with:
+          azcliversion: 2.53.0
+          inlineScript: |
+            az extension add --name ml -y
+            az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
+            az ml job create --file ./self/pipelines/animals-classification.yaml --resource-group mlops --workspace-name dagobert --set name=animals-classification-${{ github.sha}}-${{ github.run_id}} --stream
+            VERSION=$(az ml model list -n animal-classification --query "[0].version" -o tsv)
+            echo "Latest model version of animal-classification is $VERSION"
+            echo "::set-output name=latest_version::$VERSION"
+
+      - name: Cleanup Azure ML script
+        uses: azure/CLI@v1
+        if: always()
+        with:
+          azcliversion: 2.53.0
+          inlineScript: |
+            az extension add --name ml -y
+            az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
+            az ml compute stop --name basic-name --resource-group mlops --workspace-name dagobert
+
+      - name: Download model
+        uses: azure/CLI@v1
+        with:
+          azcliversion: 2.53.0
+          inlineScript: |
+            az extension add --name ml -y
+            az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
+            az ml model download --name animal-classification --download-path ./inference -- version ${{ steps.azure-ml-pipeline.outputs.latest_version }}
+            mv inference/animal-classification/animals-classification/INPUT_model_path/animal-cnn inference
+
+      - name: Build Docker image
+        run: |
+          docker build -t dagobert/mlops-animals-api ./
+          inference
+          docker tag dagobert/mlops-animals-api dagobert/mlops-animals-api:main
+          docker tag dagobert/mlops-animals-api dagobert/mlops-animals-api${{ github.run_id }}
+          docker login --username dagobert --password ${{ secrets.DOCKER_PWD }}
+          docker push --all-tags dagobert/mlops-animals-api
+
+      - name: build and push to ghcr
+        run: |
+
+  download:
+    needs: azure-pipeline
+    runs-on: ubuntu-latest
+    steps:
+    -name: Check out repo
+      uses: actions/checkout@v4
+  
+  deploy:
+    if: 
+      (
+        ${{ needs.download.result == 'success' }} ||
+        ${{ needs.download.result == 'skipped' }}
+      ) &&
+        ${{ env.DEPLOY_MODEL == 'true' }}
+
+
+    runs-on: ubuntu-latest
+    # runs-on: self-hosted
