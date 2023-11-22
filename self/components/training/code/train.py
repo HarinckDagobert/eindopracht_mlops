@@ -27,7 +27,7 @@ SEED = 42
 INITIAL_LEARNING_RATE = 0.01
 BATCH_SIZE = 32
 PATIENCE = 11
-model_name = 'animal-cnn'
+model_name = 'face-cnn'
 
 
 def main():
@@ -52,7 +52,7 @@ def main():
     print('Testing folder:', testing_folder)
 
     output_folder = args.output_folder
-    print('Testing folder:', output_folder)
+    print('Output folder:', output_folder)
 
     MAX_EPOCHS = args.epochs
 
@@ -117,7 +117,7 @@ def main():
         lr=INITIAL_LEARNING_RATE, decay=INITIAL_LEARNING_RATE / MAX_EPOCHS)  # Define the Optimizer
 
     # Create the AI model as defined in the utils script.
-    model = buildModel((64, 64, 3), 3)
+    model = buildModel((48, 48, 1), 3)
 
     model.compile(loss="categorical_crossentropy",
                   optimizer=opt, metrics=["accuracy"])
