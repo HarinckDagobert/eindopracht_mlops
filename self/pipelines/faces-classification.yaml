@@ -1,5 +1,5 @@
-# az ml job create  --file pipelines/faces-classification.yaml
-name: faces-classification-2
+# az ml job create  --file self/pipelines/faces-classification.yaml
+name: faces-classification-12
 $schema: https://azuremlschemas.azureedge.net/latest/pipelineJob.schema.json
 type: pipeline
 display_name: Faces Classification
@@ -26,7 +26,7 @@ jobs:
     inputs:
       data:
         type: uri_folder
-        path: azureml:angry:1
+        path: azureml:angry:2
 
     outputs:
       model_data:
@@ -38,7 +38,7 @@ jobs:
     inputs:
       data:
         type: uri_folder
-        path: azureml:happy:1
+        path: azureml:happy:2
 
     outputs:
       model_data:
@@ -50,7 +50,7 @@ jobs:
     inputs:
       data:
         type: uri_folder
-        path: azureml:sad:1
+        path: azureml:sad:2
 
     outputs:
       model_data:

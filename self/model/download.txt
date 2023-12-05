@@ -1,0 +1,1 @@
+az ml model download -n faces-classification -v1

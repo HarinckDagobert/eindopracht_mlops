@@ -1,4 +1,4 @@
-## az ml compute create --file environment/compute.yaml
+## az ml compute create --file self/environment/compute.yaml
 $schema: https://azuremlschemas.azureedge.net/latest/computeInstance.schema.json
 name: basic-name
 type: computeinstance
