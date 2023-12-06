@@ -1,0 +1,21 @@
+## execute as: az ml component create --file self/components/dataprep/dataprep.yaml
+name: data_prep_face_image_resize_cli
+version: 0.1.0
+display_name: Data preparation, Image Resizing
+is_deterministic: True
+type: command
+description: Reads a data asset of images and preprocesses them by resizing them to 48 to 48.
+inputs:
+  data:
+    type: uri_folder
+    optional: False
+outputs:
+  output_data:
+    type: uri_folder
+code: ./code
+# environment: azureml:aml-Pillow:1
+# test
+environment: azureml:aml-Pillow-cli:0.1.0
+resources:
+  instance_count: 1
+command: "python dataprep.py --data ${{inputs.data}} --output_data ${{outputs.output_data}}             "
