@@ -1,0 +1,48 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: deployment-fastapi
+  labels:
+    eindopracht: fastapi # label voor deployment, is minder belangrijk
+  
+spec:
+  replicas: 1
+  selector:
+    metadata:
+      labels:
+        eindopracht: fastapi # selector label je zoekt alle labels voor uw pod (belangrijk dat template en selector dezelfde labels hebben)
+  template:
+    metadata:
+      labels:
+        eindopracht: fastapi # pod label
+
+    spec:
+      containers:
+      - image: harinckdagobert/mlopsapi:1.0.0 #examen vraag waarom is er een - voor image? is voor een list/sequence
+        name: fastapi
+        ports:
+        - containerPort: 80
+        resources:
+          requests:
+            cpu: 100m
+            memory: 100Mi
+          limits:
+            cpu: 500m
+            memory: 500Mi
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: service-fastapi
+  labels:
+    eindopracht: fastapi
+spec:
+  type: NodePort
+  selector:
+    eindopracht: fastapi
+  ports:
+  - port: 80
+    targetPort: 80
+    nodePort: 30007
+  

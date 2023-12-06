@@ -27,7 +27,7 @@ on:
         type: string
         description: "The name of the compute to start or stop"
         required: true
-        default: cli-created-machine
+        default: basic-name
     branches:
       - main
   workflow_call:

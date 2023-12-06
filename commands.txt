@@ -1,0 +1,24 @@
+az ad sp create-for-rbac --name "github-action-project" --role Contributor --scopes /subscriptions/411c01db-43df-4013-ba2a-065c3703ad41/mlops --sdk-auth
+
+docker build --build-arg MODEL_PATH=./model -t dag/mlops_opdracht .
+docker push dag/mlops_opdracht:1.0.0
+docker run -d --name dag/mlops_opdracht
+
+
+docker compose up .
+
+docker ps
+
+kubectl create namespace mlopsopdracht
+kubectl config set-context
+
+kubectl get pods
+kubectl get deployments
+kubectl get svc #get services
+
+kubectl apply -f kubectl_fastapi.yaml
+
+kubectl get services
+# surf naar poort once service is made
+    # mogelijk
+    kubectl port-forward

@@ -1,0 +1,8 @@
+version: "3"
+services:
+  fastapi:
+    build: ./fastapi
+    ports:
+      - 80:80
+    environment:
+      - MODEL_PATH=${MODEL_PATH}

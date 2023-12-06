@@ -1,9 +1,0 @@
-version: "3"
-services:
-  fastapi:
-    image: harinckdagobert/mlopsapi:1.0.0
-    ports:
-      - 80:80
-    build: fastapi
-    environment:
-      - MODEL_PATH=${MODEL_PATH}
