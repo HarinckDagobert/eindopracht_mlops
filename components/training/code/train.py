@@ -113,8 +113,7 @@ def main():
     cb_reduce_lr_on_plateau = keras.callbacks.ReduceLROnPlateau(
         factor=.5, patience=4, verbose=1)
 
-    opt = tf.keras.optimizers.legacy.SGD(
-        lr=INITIAL_LEARNING_RATE, decay=INITIAL_LEARNING_RATE / MAX_EPOCHS)  # Define the Optimizer
+    opt = 'adam'  # Define the Optimizer
 
     # Create the AI model as defined in the utils script.
     model = buildModel((48, 48, 1), 3)

@@ -22,3 +22,16 @@ kubectl get services
 # surf naar poort once service is made
     # mogelijk
     kubectl port-forward
+
+{
+  "clientId": "619cc5a7-8b8f-4080-a67b-d66779ced5c5",
+  "clientSecret": "pAm8Q~ZkgKrorZhl3bjnmVNmcENj2JhN-ymDUb1J",
+  "subscriptionId": "411c01db-43df-4013-ba2a-065c3703ad41",
+  "tenantId": "4ded4bb1-6bff-42b3-aed7-6a36a503bf7a",
+  "activeDirectoryEndpointUrl": "https://login.microsoftonline.com",
+  "resourceManagerEndpointUrl": "https://management.azure.com/",
+  "activeDirectoryGraphResourceId": "https://graph.windows.net/",
+  "sqlManagementEndpointUrl": "https://management.core.windows.net:8443/",
+  "galleryEndpointUrl": "https://gallery.azure.com/",
+  "managementEndpointUrl": "https://management.core.windows.net/"
+}
