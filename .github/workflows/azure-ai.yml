@@ -98,7 +98,7 @@ jobs:
         inlineScript: |
           az extension add --name ml -y
           az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
-          az ml compute create --file ./environment/compute.yaml --workspace-name $WORKSPACE --resource-group $GROUP
+          az ml compute create --file ./environment/compute.yaml --workspace-name $WORKSPACE
 
     - name: Start compute
       uses: azure/CLI@v1
