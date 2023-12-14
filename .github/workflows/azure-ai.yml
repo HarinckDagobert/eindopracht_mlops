@@ -98,7 +98,7 @@ jobs:
         inlineScript: |
           az extension add --name ml -y
           az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
-          az ml compute create --file ./environment/compute.yaml --workspace-name dagobert
+          az ml compute create --file ./environment/compute.yaml --workspace-name $WORKSPACE
 
     - name: Start compute
       uses: azure/CLI@v1
@@ -122,7 +122,7 @@ jobs:
         inlineScript: |
           az extension add --name ml -y
           az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
-          az ml job create --file ./pipelines/animals-classification.yaml --set name=animals-classification-${{ github.sha }}-${{ github.run_id }} --stream
+          az ml job create --file ./pipelines/faces-classification.yaml --set name=faces-classification-${{ github.sha }}-${{ github.run_id }} --stream
 
     - name: Cleanup Compute
       uses: azure/CLI@v1
@@ -184,8 +184,6 @@ jobs:
       uses: docker/metadata-action@v3
       with:
         # list of Docker images to use as base name for tags
-        # Use this for Docker Hub
-        # nathansegers/mlops-animals-api
         images: |
           ghcr.io/dagobertharinck/mlops-faces-api
         # generate Docker tags based on the following events/attributes:
