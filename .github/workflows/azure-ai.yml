@@ -56,7 +56,7 @@ on:
 
 env:
   GROUP: mlops
-  workspace: dagobert
+  WORKSPACE: dagobert
   LOCATION: westeurope
   # Allow to override for each run, in the workflow dispatch manual starts
   CREATE_COMPUTE: ${{ github.event.inputs.create_compute }}
@@ -98,7 +98,7 @@ jobs:
         inlineScript: |
           az extension add --name ml -y
           az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
-          az ml compute create --file ./environment/compute.yaml --workspace-name $WORKSPACE
+          az ml compute create --file ./environment/compute.yaml --workspace-name dagobert
 
     - name: Start compute
       uses: azure/CLI@v1
