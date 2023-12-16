@@ -29,7 +29,7 @@ on:
         required: true
         default: basic-name
     branches:
-      - main
+      - '*'
   workflow_call:
     inputs:
       create_compute:
@@ -176,8 +176,8 @@ jobs:
         needs.download.result == 'skipped'
       ) &&
       inputs.deploy_model }}
-    runs-on: self-hosted
-    # runs-on: ubuntu-latest
+    # runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
     - name: Gather Docker Meta Information
       id: docker-meta-data
