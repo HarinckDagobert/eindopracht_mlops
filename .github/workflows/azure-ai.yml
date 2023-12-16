@@ -158,7 +158,7 @@ jobs:
           az extension add --name ml -y
           az configure --defaults group=$GROUP workspace=$WORKSPACE location=$LOCATION
           VERSION=$(az ml model list -n faces-classification --query "[0].version" -o tsv)
-          az ml model download --name faces-classification --download-path ./inference --version $VERSION"
+          az ml model download --name faces-classification --download-path ./inference --version $VERSION
     
     - name: Upload API Code for Docker
       # if: inputs.local_deployment
