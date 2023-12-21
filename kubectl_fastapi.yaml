@@ -1,5 +1,5 @@
-apiVersion: apps/v1
 kind: Deployment
+apiVersion: apps/v1
 metadata:
   name: deployment-fastapi
   labels:
@@ -8,9 +8,8 @@ metadata:
 spec:
   replicas: 1
   selector:
-    metadata:
-      labels:
-        eindopracht: fastapi # selector label je zoekt alle labels voor uw pod (belangrijk dat template en selector dezelfde labels hebben)
+    matchLabels:
+      eindopracht: fastapi # selector label je zoekt alle labels voor uw pod (belangrijk dat template en selector dezelfde labels hebben)
   template:
     metadata:
       labels:
@@ -18,17 +17,11 @@ spec:
 
     spec:
       containers:
-      - image: harinckdagobert/mlopsapi:1.0.0 #examen vraag waarom is er een - voor image? is voor een list/sequence
+      - image: dago3/mlops_opdracht:1.0.0 #examen vraag waarom is er een - voor image? is voor een list/sequence
         name: fastapi
         ports:
         - containerPort: 80
-        resources:
-          requests:
-            cpu: 100m
-            memory: 100Mi
-          limits:
-            cpu: 500m
-            memory: 500Mi
+        resources: {}
 
 ---
 apiVersion: v1

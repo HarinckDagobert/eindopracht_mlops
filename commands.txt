@@ -1,11 +1,10 @@
-az ad sp create-for-rbac --name "github-action-project" --role Contributor --scopes /subscriptions/411c01db-43df-4013-ba2a-065c3703ad41/mlops --sdk-auth
 
-docker build --build-arg MODEL_PATH=./model -t dag/mlops_opdracht .
-docker push dag/mlops_opdracht:1.0.0
+docker build --build-arg MODEL_PATH=./model -t dago3/mlops_opdracht:1.0.0 .
+docker image push dago3/mlops_opdracht:1.0.0
 docker run -d --name dag/mlops_opdracht
 
 
-docker compose up .
+docker compose up
 
 docker ps
 
@@ -23,6 +22,7 @@ kubectl get services
     # mogelijk
     kubectl port-forward
 
+az ad sp create-for-rbac --name "github-action-project" --role Contributor --scopes /subscriptions/411c01db-43df-4013-ba2a-065c3703ad41/resourceGroups/mlops --json-auth
 {
   "clientId": "619cc5a7-8b8f-4080-a67b-d66779ced5c5",
   "clientSecret": "pAm8Q~ZkgKrorZhl3bjnmVNmcENj2JhN-ymDUb1J",

@@ -1,8 +1,12 @@
 version: "3"
 services:
   fastapi:
-    build: ./fastapi
+    image: dago3/mlops_opdracht:1.0.0
     ports:
       - 80:80
-    environment:
-      - MODEL_PATH=${MODEL_PATH}
+  # fastapi:
+  #   build: ./fastapi
+  #   ports:
+  #     - 80:80
+  #   environment:
+  #     - MODEL_PATH=${MODEL_PATH}

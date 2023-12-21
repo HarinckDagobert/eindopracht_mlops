@@ -1,10 +1,11 @@
-from fastapi import FastAPI, APIRouter
-from fastapi.responses import JSONResponse, HTMLResponse
+from fastapi import FastAPI, APIRouter, File, UploadFile, HTTPException
+from fastapi.responses import JSONResponse
 import tensorflow as tf
 import cv2
 import os
 import numpy as np
 import base64
+import uuid
 
 absolute_path = os.path.dirname(__file__)
 relative_path = "model"
@@ -27,52 +28,34 @@ def make_api_call():
     return {"API Response": response}
 
 
-def capture_image():
-    cap = cv2.VideoCapture(0)
-    ret, frame = cap.read()
-    cap.release()
-    gray_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+def process_image(content):
+    nparr = np.frombuffer(content, np.uint8)
+    image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+    gray_frame = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     resized_gray_frame = cv2.resize(gray_frame, (48, 48))
     image = resized_gray_frame.astype(np.float32) / 255.0
     image = np.expand_dims(image, axis=-1)  # Add channel dimension
     image = np.expand_dims(image, axis=0)  # Add batch dimension
-    return image, frame
+    return image
 
 
-def encode_image(image):
-    _, buffer = cv2.imencode(".jpg", image)
-    return base64.b64encode(buffer).decode("utf-8")
+@router.post("/predict")
+async def predict_face(file: UploadFile = File(...)):
+    file.filename = f"{uuid.uuid4()}.jpg"
+    contents = await file.read()
+    image = process_image(contents)
 
-
-@router.get("/predict")
-def predict_face():
     global model
-    image, original_image = capture_image()
-
     predictions = model.predict(image)
 
     emotion_labels = ["angry", "happy", "sad"]
 
     result_dict = {
-        "Predictions": {label: value for label, value in zip(emotion_labels, predictions.tolist()[0])},
-        "EncodedImage": encode_image(original_image)
+        "Predictions": {label: float(value) for label, value in zip(emotion_labels, predictions.tolist()[0])},
+        "EncodedImage": base64.b64encode(contents).decode("utf-8")
     }
 
-    html_content = """
-    <html>
-    <head>
-        <title>Predicted Image</title>
-    </head>
-    <body>
-        <h2>Predictions:</h2>
-        <pre>{}</pre>
-        <h2>Image:</h2>
-        <img src="data:image/jpg;base64,{}" alt="predicted_image" />
-    </body>
-    </html>
-    """.format(result_dict["Predictions"], result_dict["EncodedImage"])
-
-    return HTMLResponse(content=html_content)
+    return JSONResponse(content=result_dict)
 
 
 app.include_router(router)
